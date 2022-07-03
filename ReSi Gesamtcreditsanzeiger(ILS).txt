@@ -1,0 +1,25 @@
+// ==UserScript==
+// @name         ReSi Gesamtcreditsanzeiger(ILS)
+// @namespace    http://tampermonkey.net/
+// @version      1.1
+// @description  Zeigt im Browsergame rettungssimulator.online in der Sidebar die ingesamt verdienten Münzen an.
+// @author       NiZi112
+// @match        https://rettungssimulator.online/
+// @icon         https://region-hannover-frn.neocities.org/Unbenannt%20(3).png
+// @grant        none
+// ==/UserScript==
+(function() {
+    'use strict';
+    var neu = document.createElement("li");
+    var davor = document.getElementById("darkMode");
+    davor.after(neu);
+    $.ajax({
+    url: "/api/user",
+    dataType: "json",
+    type : "GET",
+    success : function(r) {
+      var muenzen = r.muenzenTotal.toLocaleString();
+      neu.innerHTML=muenzen + " Münzen";
+    }
+});
+})();

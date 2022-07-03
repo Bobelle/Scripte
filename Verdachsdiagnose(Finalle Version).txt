@@ -1,0 +1,10 @@
+function keywordsAd() {
+    'use strict';
+    const worte =["VERDACHTSDIAGNOSE für RTW & NEF","Kopfplatzwunde","Varitzenblutung","--------------------","Schulterluxation","Tibiafraktur","Schenkelhalsfraktur","Vorerkrankung  Osteogenesis imperfecta", "--------------------","Akutes Abdomen","Beginnende Geburt","Rückenschmerzen","Lumbago","--------------------","Alkoholintox","Rauchgasinhalation","Anaphylaktischer Schock","--------------------","Asthmatischer Anfall","Atemnot","--------------------","Synkope","Nicht ansprechbare Person","Bewußtlosigkeit","--------------------","Kreislaufbeschwerden","Hypertonie","Herzinfarkt",","]
+    var html_string = "<span style='overflow:auto'>"
+    for (var i = 0; i < worte.length; i++) {
+        html_string += `<span onclick='$("#iframe").contents().find("#patientDiagnose").val(this.innerHTML)'>${worte[i]}</span><br>`
+    };
+    html_string += "</span>"
+    $("#ad").append(html_string);
+};

@@ -1,0 +1,109 @@
+// ==UserScript==
+// @name         insertMissionName.user.js (Finalle Version)
+// @namespace    http://tampermonkey.net/
+// @version      1.0.0
+// @description  Inserts mission names and other stuff!
+// @author       Bobelle
+// @match        https://rettungssimulator.online/missionNew/*
+// @icon         http://rettungssimulator.online/favicon.ico
+// @grant        none
+// ==/UserScript==
+/* global $ replaceFunc */
+
+(() => {
+    let darkMode = true; // true oder false
+    let missionNames = ['B:Klein', 'B:PKW', 'B:LKW', 'B:Schornstein', 'B:Gebäude-Klein', 'B:Gebäude-Groß', 'B:Sonderobjekt', 'B:BMA', 'B:Fläche', 'B:Wald', 'B:Wald-Groß', 'B:Wald-im-WSP', 'B:Schiene', 'B:Boot', 'B:Schiff', 'B:Gefahrgut', 'B:Kleinflugzeug', 'B:Großflugzeug', 'B:Explosion', 'H:Klein', 'H:Natur', 'H:Hilfeleistung', 'H:Türnotöffnung', 'H:VU-ohne-P', 'H:VU-mit-P', 'H:VU-Klemm', 'H:VU-LKW/BUS', 'H:VU-Schiene', 'H:VU-Schiff', 'H:Flugzeugunfall-Klein', 'H:Flugzeugunfall-Groß', 'H:Person-auf-Schiene', 'H:Person-im-Wasser/EIS', 'H:Rettung-aus-Höhen-und-Tiefen', 'H:Gas', 'H:Gefahrgut-Klein', 'H:Gefahrgut-Groß', 'H:Einsturz', 'H:Öl-Land', 'H:Öl auf Wasser', 'H:Tier-in-Not', 'H:Kommunal', 'H:Person-TMR', 'H:Wachbesetzung', 'K1:KTW', 'R1N0', 'R2N0', 'R3N0', 'R1N1', 'R2N1', 'R2N2', 'R3N1', 'R3N2', 'R3N3', 'R4N1', 'R4N2', 'R4N3', 'M:MANV-Klein', 'S4:Polizeiliche-Einsatzlage', 'S63:COVID19 - Einsatz-Leitstelle'];
+    let missionCities = ['Stadt', 'Dorf'];
+    let missionStreets = ['Hauptstraße', 'Nicht-die-Haupstraße'];
+    let missionHouseNumbers = ['11a', '12b'];
+    let freeText = ['Wir brauchen hier mal nen gebratenes Hänchen..., äh, einen Patienten mit schweren Verbrennungen. Bitte S7 zur Leitstelle!', 'Die Leitstelle brennt! Panik!!1!'];
+    let sache1 = ['BAB2 > Dreieck Werder', 'BAB2 > Magdeburg', 'BAB9 > Dreieck Potsdam', 'BAB9 > Leipzig', 'BAB10 > Dreieck Potsdam', 'BAB10 > Dreieck Nuthetal', 'BAB10 > Dreieck Havelland'];
+    let sache2 = ['AS Brandenburg - AS Netzen', 'AS Netzen - AS Lehnin', 'AS Wollin - AS Brandenburg', 'AS Wollin - AS Ziesar', 'AS Groß Kreutz - AS Phöben', 'AD Werder - AS Groß Kreutz'];
+
+    function getListFromArray(arrayList, className) {
+        let list = '<ul>';
+        arrayList.forEach((el) => {
+            list += `<li class="${className}">${el}</li>`;
+        });
+        list += '</ul>';
+        return list;
+    }
+
+    function buildFrameContent() {
+        return `<h2>Einsatznamen:</h2>
+        ${getListFromArray(missionNames, 'missionName')}
+        <h2>Straßen:</h2>
+        ${getListFromArray(missionStreets, 'street')}
+        <h2>Hausnummern:</h2>
+        ${getListFromArray(missionHouseNumbers, 'houseNumber')}
+        <h2>Orte:</h2>
+        ${getListFromArray(missionCities, 'city')}
+        <h2>BAB:</h2>
+        ${getListFromArray(sache1, 'sache1')}
+        <h2>AS:</h2>
+        ${getListFromArray(sache2, 'sache2')}
+        <h2>Freitexte:</h2>
+        ${getListFromArray(freeText, 'freeText')}<br>`
+    }
+
+    function openWindow() {
+        let newWindow;
+        if ((newWindow == null) || (newWindow.closed) || (!newWindow)) {
+            newWindow = window.open('', "Intelligenter Helfer für alles Mögliche",
+                                    "width=400,height=300,resizable=yes,status=no," +
+                                    "menubar=no,location=no,scrollbars=no,toolbar=no,top=100,left=20");
+            newWindow.opener = top;
+            newWindow.focus();
+        } else {
+            newWindow.focus();
+        }
+        window.addEventListener('unload', () => {
+            newWindow.close();
+        })
+        newWindow.document.head.innerHTML = `<title>Stichworte ReSi</title><link rel="stylesheet" href="https://rettungssimulator.online/css/index.css"></link><link rel="shortcut icon" href="https://rettungssimulator.online/images/favicons/favicon.ico"></link>>`;
+        newWindow.document.body.innerHTML = buildFrameContent();
+        if(darkMode) newWindow.document.body.classList.add('dark');
+        $('.missionName', newWindow.document).on('click', (e) => {
+            $('#newMissionNameInput').val(replaceFunc($(e.target).text()));
+        })
+        $('.street', newWindow.document).on('click', (e) => {
+            $('#newMissionRoadInput').val(replaceFunc($(e.target).text()));
+        })
+        $('.houseNumber', newWindow.document).on('click', (e) => {
+            $('#newMissionHousenumberInput').val(replaceFunc($(e.target).text()));
+        })
+        $('.city', newWindow.document).on('click', (e) => {
+            $('#newMissionCityInput').val(replaceFunc($(e.target).text()));
+        })
+        $('.freeText', newWindow.document).on('click', (e) => {
+            $('#newMissionCustomText').val(replaceFunc($(e.target).text()));
+        })
+        $('.sache1', newWindow.document).on('click', (e) => {
+            $('#7').val(replaceFunc($(e.target).text()));
+        })
+        $('.sache2', newWindow.document).on('click', (e) => {
+            $('#6').val(replaceFunc($(e.target).text()));
+        })
+    }
+    $('body').append(`<script>
+        function replaceFunc(text){
+          text = text.replace(/%text%/g, $("#newMissionCustomText").val());
+          text = text.replace(/%ort%/g, $("#newMissionCityInput").val());
+          text = text.replace(/%straße%/g, $("#newMissionRoadInput").val());
+          text = text.replace(/%nummer%/g, $("#newMissionHousenumberInput").val());
+          text = text.replace(/%name%/g, $("#newNameInput").val());
+          text = text.replace(/%stichwort%/g, $("#newMissionNameInput").val());
+          text = text.replace(/%bab%/g, $("#7").val());
+          text = text.replace(/%as1%/g, $("#6").val());
+          text = text.replace(/%as2%/g, $("#5").val());
+          text = text.replace(/%km%/g, $("#4").val());
+          text = text.replace(/%lkbstraße%/g, $("#3").val());
+          text = text.replace(/%ort1%/g, $("#2").val());
+          text = text.replace(/%ort2%/g, $("#1").val());
+          return text;
+        };
+        </script>`)
+    $('.frame-close').before(`<button style="margin-left:10px;" class="right button button-success button-round openWindow">Einsatzstichworte</button>`);
+    $('.openWindow').on('click', openWindow)
+    openWindow();
+})()

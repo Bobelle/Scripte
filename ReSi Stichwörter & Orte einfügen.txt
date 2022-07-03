@@ -1,0 +1,48 @@
+// ==UserScript==
+// @name         ReSi Stichwörter & Orte einfügen
+// @version      1.0
+// @description  Fügt Stichwörter & Orte auf Klick in das jeweilige Feld ein!
+// @author       NiZi112
+// @match        https://rettungssimulator.online/missionNew/*
+// @icon         https://www.google.com/s2/favicons?domain=rettungssimulator.online
+// ==/UserScript==
+/* global $ */
+
+(function() {
+    'use strict';
+    const worte =["Einsätze Feuerwehr","","Einsatz #B1","Einsatz #B2","Großschadensfall",];
+    const worte2 =["Einsätze Rettungsdienst","","Einsatz #NA", "Einsatz #RTW","Einsatz #RTW + NA","Einsatz #KTW","Einsatz #LNA","Manv1"];
+    const worte3 =["Einsätze Landespolizei","","Einsatz #P1", "Einsatz #P2",];
+    const worte4 =["Einsätze Bundespolizei","","Einsatz #BP1","Einsatz #BP2",];
+    const worte5 =["Einsätze Technische Hilfe","","Einsatz #TH1","Einsatz #TH2","Einsatz #ABC1","Einsatz #ABC2","Einsatz #TR1",];
+    var zahl = Math.max(
+	worte.length,
+	worte2.length,
+	worte3.length,
+	worte4.length,
+	worte5.length,
+    )
+    var html_string = `<script>
+        function replaceFunc(text){
+          text = text.replace(/%text%/g, $("#newMissionCustomText").val());
+          text = text.replace(/%ort%/g, $("#newMissionCityInput").val());
+          text = text.replace(/%straße%/g, $("#newMissionRoadInput").val());
+          text = text.replace(/%nummer%/g, $("#newMissionHousenumberInput").val());
+          text = text.replace(/%name%/g, $("#newNameInput").val());
+          text = text.replace(/%stichwort%/g, $("#newMissionNameInput").val());
+          return text;
+        };
+        </script>
+        <table class="striped table-divider"><thead></thead><tbody>`;
+    for (var i = 0; i < zahl; i++) {
+        html_string += `<tr>`;
+        html_string += `<td onclick='$("#newMissionCustomText").val(replaceFunc(this.innerText));'>${worte[i] ? worte[i] : ''}</td>`;
+        html_string += `<td onclick='$("#newMissionCustomText").val(replaceFunc(this.innerText));'>${worte2[i] ? worte2[i] : ''}</td>`;
+        html_string += `<td onclick='$("#newMissionCustomText").val(replaceFunc(this.innerText));'>${worte3[i] ? worte3[i] : ''}</td>`;
+        html_string += `<td onclick='$("#newMissionCustomText").val(replaceFunc(this.innerText));'>${worte4[i] ? worte4[i] : ''}</td>`;
+        html_string += `<td onclick='$("#newMissionCustomText").val(replaceFunc(this.innerText));'>${worte5[i] ? worte5[i] : ''}</td>`;
+        html_string += `</tr>`;
+    };
+    html_string += "</tbody></table>"
+    $(".panel-body").append(html_string);
+})();
